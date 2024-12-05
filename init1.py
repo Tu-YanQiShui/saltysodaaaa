@@ -107,6 +107,7 @@ def loginAuth():
         # check if password is correct
         stored_password = data['password']
         if(verify_pass(stored_password,password)):
+            # if password match, set the session
             session['username'] = username
             return redirect(url_for('home'))
         else:
@@ -162,6 +163,11 @@ def home():
     #cursor.close()
     return render_template('home.html', username=user)
 
+@app.route('/find_single_item')
+def find_single_item():
+    user = session['username']
+    
+    return render_template('find_single_item.html', username=user)
         
 @app.route('/post', methods=['GET', 'POST'])
 def post():
