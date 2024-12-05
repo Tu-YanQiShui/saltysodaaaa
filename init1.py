@@ -1,6 +1,10 @@
 #Import Flask Library
 from flask import Flask, render_template, request, session, url_for, redirect, flash
 import pymysql.cursors
+import uuid
+import hashlib
+import os
+import base64
 
 #for uploading photo:
 from app import app
@@ -61,6 +65,26 @@ def login():
 def register():
     return render_template('register.html')
 
+def encrypt_pass(password):
+    algorithm = 'sha256'
+    salt = base64.b64encode(os.urandom(4)).decode('utf-8')
+    hash_obj = hashlib.new(algorithm)
+    password_salted = salt + password
+    hash_obj.update(password_salted.encode('utf-8'))
+    password_hash = base64.b64encode(hash_obj.digest()).decode('utf-8')
+
+    password_db_string = f"{algorithm}${salt}${password_hash}"
+    return password_db_string
+
+def verify_pass(hashed_password, input_password):
+    algorithm, salt, stored_hash = hashed_password.split('$')
+    hash_obj = hashlib.new(algorithm)
+    password_salted = salt + input_password
+    hash_obj.update(password_salted.encode('utf-8'))
+    input_password_hash = base64.b64encode(hash_obj.digest()).decode('utf-8')
+    password_db_string = f"{algorithm}${salt}${input_password_hash}"
+    return password_db_string == hashed_password
+
 #Authenticates the login
 @app.route('/loginAuth', methods=['GET', 'POST'])
 def loginAuth():
@@ -71,18 +95,23 @@ def loginAuth():
     #cursor used to send queries
     cursor = conn.cursor()
     #executes query
-    query = 'SELECT * FROM Person WHERE userName = %s and password = %s'
-    cursor.execute(query, (username, password))
+    query = 'SELECT * FROM Person WHERE userName = %s'
+    cursor.execute(query, (username))
     #stores the results in a variable
     data = cursor.fetchone()
+    print(data)
     #use fetchall() if you are expecting more than 1 data row
     cursor.close()
     error = None
     if(data):
-        #creates a session for the the user
-        #session is a built in
-        session['username'] = username
-        return redirect(url_for('home'))
+        # check if password is correct
+        stored_password = data['password']
+        if(verify_pass(stored_password,password)):
+            session['username'] = username
+            return redirect(url_for('home'))
+        else:
+            error = 'Invalid password'
+            return render_template('login.html', error=error)
     else:
         #returns an error message to the html page
         error = 'Invalid login or username'
@@ -93,7 +122,8 @@ def loginAuth():
 def registerAuth():
     #grabs information from the forms
     username = request.form['username']
-    password = request.form['password']
+    password = encrypt_pass(request.form['password'])
+    print(password)
     fname = request.form['fname']
     lname = request.form['lname']
     email = request.form['email']
@@ -125,12 +155,12 @@ def registerAuth():
 @app.route('/home')
 def home():
     user = session['username']
-    cursor = conn.cursor();
-    query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
-    cursor.execute(query, (user))
-    data = cursor.fetchall()
-    cursor.close()
-    return render_template('home.html', username=user, posts=data)
+    #cursor = conn.cursor();
+    #query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
+    #cursor.execute(query, (user))
+    #data = cursor.fetchall()
+    #cursor.close()
+    return render_template('home.html', username=user)
 
         
 @app.route('/post', methods=['GET', 'POST'])
