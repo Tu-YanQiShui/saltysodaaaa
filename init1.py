@@ -97,6 +97,7 @@ def registerAuth():
     fname = request.form['fname']
     lname = request.form['lname']
     email = request.form['email']
+    role = request.form['role']
     #cursor used to send queries
     cursor = conn.cursor()
     #executes query
@@ -112,7 +113,10 @@ def registerAuth():
         return render_template('register.html', error = error)
     else:
         ins = 'INSERT INTO person VALUES(%s, %s, %s, %s, %s)'
+        ins_act = 'INSERT INTO Act VALUES(%s,%s)'
         cursor.execute(ins, (username, password, fname, lname, email))
+        # update the act table with user-role
+        cursor.execute(ins_act, (username, role))
         conn.commit()
         cursor.close()
         return render_template('index.html')

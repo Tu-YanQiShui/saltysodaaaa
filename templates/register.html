@@ -8,6 +8,12 @@
 	<input type="text" name = "fname" placeholder="firstname" required/></br>
 	<input type="text" name = "lname" placeholder="lastname" required/></br>
 	<input type="text" name = "email" placeholder="email" required/></br>
+	<label for="role"><strong>Role:</strong></label>
+    <select name="role" id="role" required>
+        <option value="" disabled selected>Select your role</option> <!-- 默认空选项 -->
+        <option value="staff" name = "role">Staff</option>
+        <option value="volunteer" name = "role">Volunteer</option>
+    </select></br>
 	<input type="submit" value = Register />
 	{% if error %}
 		<p class="error"><strong>Error:</strong> {{error}}</p>
