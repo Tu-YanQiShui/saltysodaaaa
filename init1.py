@@ -210,7 +210,7 @@ def find_order_items():
 def accept_donation():
     username = session['username']
     if(request.method == 'GET'):
-        return render_template('accept_donation.html')
+        return render_template('accept_donation.html', items_with_pieces={})
     cursor = conn.cursor();
     # check if the user is staff
     # I assume a user cannot be staff and volunteer at the same time
