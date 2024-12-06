@@ -205,6 +205,52 @@ def find_order_items():
     print(item_dict)
     return render_template('find_order_items.html', data = item_dict)
 
+# task 4
+@app.route('/accept_donation', methods=['GET', 'POST'])
+def accept_donation():
+    username = session['username']
+    if(request.method == 'GET'):
+        return render_template('accept_donation.html')
+    cursor = conn.cursor();
+    # check if the user is staff
+    # I assume a user cannot be staff and volunteer at the same time
+    query = """SELECT roleID from Act as a
+    WHERE a.userName = %s
+    """
+    cursor.execute(query, username)
+    role = cursor.fetchone()
+    #print(role)
+    #print(role.get('roleID') == "staff")
+    if(role.get('roleID') == "staff"):
+        print("hello")
+        # check if the donor exist
+        donor = request.form['doner_id']
+        query = """
+        SELECT d.userName, i.ItemID, p.roomNum, p.shelfNum
+        FROM DonatedBy as d Natural Join Item as i
+        Join Piece as p on p.ItemID = i.ItemID 
+        WHERE d.userName = %s
+        """
+        cursor.execute(query, (donor))
+        data = cursor.fetchall()
+        print(data)
+        items_with_pieces = {}
+        for row in data:
+            item_id = row['ItemID']
+            if item_id not in items_with_pieces:
+                items_with_pieces[item_id] = []
+            items_with_pieces[item_id].append({
+                'roomNum': row['roomNum'],
+                'shelfNum': row['shelfNum']
+            })
+        return render_template('accept_donation.html', items_with_pieces=items_with_pieces)
+        
+
+    else:
+        error = 'Only staff could operate this page'
+        return render_template('accept_donation.html', error=error)
+    return render_template('accept_donation.html')
+
 @app.route('/post', methods=['GET', 'POST'])
 def post():
     username = session['username']

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Single Item</title>
+</head>
+<body>
+    <h1>Find donations</h1>
+    <form action="/accept_donation" method="POST">
+        <label for="doner_id">Enter Doner ID(Name):</label>
+        <input type="text" id="doner_id" name="doner_id" required>
+        <button type="submit">Search</button>
+    </form>
+    {% for item_id, pieces in items_with_pieces.items() %}
+        <h2>Item ID: {{ item_id }}</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Room Number</th>
+                    <th>Shelf Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for piece in pieces %}
+                    <tr>
+                        <td>{{ piece.roomNum }}</td>
+                        <td>{{ piece.shelfNum }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+
+    {% if error %}
+		<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}
+
+    <a href="/home">Back</a>
+    
+</body>
+</html>
