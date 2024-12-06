@@ -12,5 +12,17 @@
         <input type="text" id="item_id" name="item_id" required>
         <button type="submit">Search</button>
     </form>
+
+    <table>
+        <th>room</th>
+        <th>shelf</th>
+    
+    {% for loc in locations %}
+        <tr>
+            <td>{{loc.roomNum}}</td>
+            <td>{{loc.shelfNum}}</td>
+        </tr>
+    {% endfor %}
+    </table>
 </body>
 </html>

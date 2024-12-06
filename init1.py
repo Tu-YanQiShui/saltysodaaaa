@@ -163,11 +163,21 @@ def home():
     #cursor.close()
     return render_template('home.html', username=user)
 
-@app.route('/find_single_item')
+@app.route('/find_single_item', methods=['GET', 'POST'])
 def find_single_item():
     user = session['username']
-    
-    return render_template('find_single_item.html', username=user)
+    if(request.method == 'GET'):
+        return render_template('find_single_item.html')
+    item_id = request.form['item_id']
+    cursor = conn.cursor();
+    query = """SELECT p.shelfNum, p.roomNum 
+            FROM Piece as p
+            Where p.ItemID = %s"""
+    cursor.execute(query, (item_id))
+    location_list = cursor.fetchall()
+    print(location_list)
+    cursor.close()
+    return render_template('find_single_item.html', locations = location_list)
         
 @app.route('/post', methods=['GET', 'POST'])
 def post():
