@@ -202,7 +202,7 @@ def find_order_items():
         room_shelf = (piece['roomNum'], piece['shelfNum'])
         item_dict.setdefault(item_id, []).append(room_shelf)
     print(item_dict)
-    return render_template('find_order_items.html', locations = location_list)
+    return render_template('find_order_items.html', data = item_dict)
 
 @app.route('/post', methods=['GET', 'POST'])
 def post():

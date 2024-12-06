@@ -13,5 +13,19 @@
         <button type="submit">Search</button>
     </form>
 
+    <h1>Item/Piece locations of this order</h1>
+    <ul>
+        {% for key, values in data.items() %}
+            <li>
+                <strong>ItemID: {{ key }}</strong>
+                <ul>
+                    {% for room, shelf in values %}
+                        <li>room: {{ room }}, shelf: {{ shelf }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+
 </body>
 </html>
