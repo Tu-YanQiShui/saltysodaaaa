@@ -163,6 +163,7 @@ def home():
     #cursor.close()
     return render_template('home.html', username=user)
 
+# task 2
 @app.route('/find_single_item', methods=['GET', 'POST'])
 def find_single_item():
     user = session['username']
@@ -178,7 +179,31 @@ def find_single_item():
     print(location_list)
     cursor.close()
     return render_template('find_single_item.html', locations = location_list)
-        
+
+# task 3
+@app.route('/find_order_items', methods=['GET', 'POST'])
+def find_order_items():
+    user = session['username']
+    if(request.method == 'GET'):
+        return render_template('find_order_items.html')
+    order_id = request.form['order_id']
+    cursor = conn.cursor();
+    query = """
+    SELECT i.ItemID, p.roomNum, p.shelfNum
+    FROM Piece as p Natural Join ItemIn as i
+    WHERE i.orderID = %s
+    """
+    cursor.execute(query, (order_id))
+    location_list = cursor.fetchall()
+    cursor.close()
+    item_dict = {}
+    for piece in location_list:
+        item_id = piece['ItemID']
+        room_shelf = (piece['roomNum'], piece['shelfNum'])
+        item_dict.setdefault(item_id, []).append(room_shelf)
+    print(item_dict)
+    return render_template('find_order_items.html', locations = location_list)
+
 @app.route('/post', methods=['GET', 'POST'])
 def post():
     username = session['username']
