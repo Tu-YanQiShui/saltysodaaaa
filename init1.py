@@ -168,7 +168,7 @@ def home():
 def find_single_item():
     user = session['username']
     if(request.method == 'GET'):
-        return render_template('find_single_item.html')
+        return render_template('find_single_item.html', locations = [])
     item_id = request.form['item_id']
     cursor = conn.cursor();
     query = """SELECT p.shelfNum, p.roomNum 
@@ -185,7 +185,8 @@ def find_single_item():
 def find_order_items():
     user = session['username']
     if(request.method == 'GET'):
-        return render_template('find_order_items.html')
+        return render_template('find_order_items.html',data = {})
+    
     order_id = request.form['order_id']
     cursor = conn.cursor();
     query = """
