@@ -26,7 +26,9 @@
             </li>
         {% endfor %}
     </ul>
+    {% if error %}
+        <p class="error"><strong>Error:</strong> {{error}}</p>
+    {% endif %}
     <a href="/home">Back</a>
-    
 </body>
 </html>

@@ -23,7 +23,7 @@ conn = pymysql.connect(host='localhost',
                        port = 3306,
                        user='root',
                        password='93400819',
-                       db='proj_db',
+                       db='p3db',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
 
@@ -155,12 +155,9 @@ def registerAuth():
 
 @app.route('/home')
 def home():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     user = session['username']
-    #cursor = conn.cursor();
-    #query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
-    #cursor.execute(query, (user))
-    #data = cursor.fetchall()
-    #cursor.close()
     return render_template('home.html', username=user)
 
 # task 2
@@ -170,6 +167,7 @@ def find_single_item():
     if(request.method == 'GET'):
         return render_template('find_single_item.html', locations = [])
     item_id = request.form['item_id']
+    print(item_id)
     cursor = conn.cursor();
     query = """SELECT p.shelfNum, p.roomNum 
             FROM Piece as p
@@ -177,6 +175,9 @@ def find_single_item():
     cursor.execute(query, (item_id))
     location_list = cursor.fetchall()
     print(location_list)
+    if not location_list:
+        error = 'This item does not exist'
+        return render_template('find_single_item.html', locations=[], error=error)
     cursor.close()
     return render_template('find_single_item.html', locations = location_list)
 
@@ -188,6 +189,7 @@ def find_order_items():
         return render_template('find_order_items.html',data = {})
     
     order_id = request.form['order_id']
+    print(order_id)
     cursor = conn.cursor();
     query = """
     SELECT i.ItemID, p.roomNum, p.shelfNum
@@ -203,6 +205,9 @@ def find_order_items():
         room_shelf = (piece['roomNum'], piece['shelfNum'])
         item_dict.setdefault(item_id, []).append(room_shelf)
     print(item_dict)
+    if not item_dict:
+        error = 'This order does not exist'
+        return render_template('find_order_items.html', data = {}, error=error)
     return render_template('find_order_items.html', data = item_dict)
 
 # task 4
