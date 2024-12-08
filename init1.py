@@ -318,19 +318,24 @@ def update_orders():
     cursor = conn.cursor()
 
     if request.method == 'POST':
-        order_id = request.form['order_id']
-        cursor.execute("SELECT status FROM Delivered WHERE orderID = %s AND userName = %s", (order_id, username))
-        current_status = cursor.fetchone()
+        id = request.form['order_id']
+        query = """
+        SELECT status 
+        FROM Delivered 
+        WHERE orderID = %s AND userName = %s
+        """
+        cursor.execute(query, (id, username))
+        status = cursor.fetchone()
 
-        if current_status:
-            new_status = 'shipped' 
-            if current_status['status'] == 'shipped':
-                new_status = 'not yet shipped'
-            cursor.execute(
-                "UPDATE Delivered SET status = %s WHERE orderID = %s AND userName = %s",
-                (new_status, order_id, username)
-            )
-            conn.commit()
+        update_status = 'shipped' 
+        if status['status'] == 'shipped':
+            update_status = 'not yet shipped'
+        query = """
+        UPDATE Delivered 
+        SET status = %s 
+        WHERE orderID = %s AND userName = %s"""
+        cursor.execute(query,(update_status, id, username))
+        conn.commit()
 
     query = """
         SELECT o.orderID, o.orderDate, o.orderNotes, d.status
@@ -342,7 +347,7 @@ def update_orders():
     orders = cursor.fetchall()
     cursor.close()
 
-    return render_template('update_orders.html', orders=orders)
+    return render_template('update_orders.html', display=orders)
 
 # task 11
 @app.route('/year_report', methods=['GET'])

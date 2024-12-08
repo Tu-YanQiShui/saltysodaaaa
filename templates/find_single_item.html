@@ -16,22 +16,13 @@
         <p><strong>Error:</strong> {{ error }}</p>
     {% endif %}
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Room</th>
-                <th>Shelf</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for loc in locations %}
-            <tr>
-                <td>{{ loc.roomNum }}</td>
-                <td>{{ loc.shelfNum }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <ul>
+        {% for loc in locations %}
+        <li>
+            <strong>Room:</strong> {{ loc.roomNum }}, <strong>Shelf:</strong> {{ loc.shelfNum }}
+        </li>
+        {% endfor %}
+    </ul>
 
     <a href="/home">Back</a>
     <a href="{{ url_for('logout') }}">Logout</a>

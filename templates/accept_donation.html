@@ -7,38 +7,31 @@
     <h1>Accept Donations</h1>
 
     <form action="/accept_donation" method="POST">
-        <label for="donor_id">Donor ID (Name):</label>
-        <input type="text" id="donor_id" name="donor_id" required>
+        Donor ID (Name): <input type="text" id="donor_id" name="donor_id" required>
         <br>
-        <label for="item_description">Item Description:</label>
-        <input type="text" id="item_description" name="item_description" required>
+        Item Description: <input type="text" id="item_description" name="item_description" required>
         <br>
-        <label for="photo">Photo:</label>
-        <input type="text" id="photo" name="photo" required>
+        Photo: <input type="text" id="photo" name="photo" required>
         <br>
-        <label for="color">Color:</label>
-        <input type="text" id="color" name="color" required>
+        Color: <input type="text" id="color" name="color" required>
         <br>
-        <label for="is_new">Item new?</label>
+        Item new? 
         <select id="is_new" name="is_new" required>
             <option value="true">Yes</option>
             <option value="false">No</option>
         </select>
         <br>
-        <label for="has_pieces">Item have pieces?</label>
+        Item have pieces? 
         <select id="has_pieces" name="has_pieces" required>
             <option value="true">Yes</option>
             <option value="false">No</option>
         </select>
         <br>
-        <label for="material">Material:</label>
-        <input type="text" id="material" name="material">
+        Material: <input type="text" id="material" name="material">
         <br>
-        <label for="main_category">Main Category:</label>
-        <input type="text" id="main_category" name="main_category" required>
+        Main Category: <input type="text" id="main_category" name="main_category" required>
         <br>
-        <label for="sub_category">Sub Category:</label>
-        <input type="text" id="sub_category" name="sub_category" required>
+        Sub Category: <input type="text" id="sub_category" name="sub_category" required>
         <br>
         <button type="submit">Submit</button>
     </form>
