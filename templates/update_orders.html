@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Orders</title>
 </head>
-<body>
-    <h1>Orders You Supervise</h1>
-    <table border="1">
-        <tr>
+<body style="font-family: Arial, sans-serif; text-align: center;">
+
+    <h1 style="color: #333; margin-bottom: 20px;">Orders You Supervise</h1>
+    
+    <table border="1" cellspacing="0" cellpadding="10" style="margin: 0 auto; border-collapse: collapse; width: 80%;">
+        <tr style="background-color: #f2f2f2;">
             <th>Order ID</th>
             <th>Order Date</th>
             <th>Order Notes</th>
@@ -16,15 +18,17 @@
             <th>Action</th>
         </tr>
         {% for order in orders %}
-        <tr>
+        <tr style="background-color: {% if loop.index0 % 2 == 0 %}#ffffff{% else %}#f9f9f9{% endif %};">
             <td>{{ order.orderID }}</td>
             <td>{{ order.orderDate }}</td>
             <td>{{ order.orderNotes }}</td>
-            <td>{{ order.status}}</td>
+            <td style="color: {% if order.status == 'shipped' %}green{% else %}red{% endif %}; font-weight: bold;">
+                {{ order.status }}
+            </td>
             <td>
                 <form method="POST" action="/update_orders">
                     <input type="hidden" name="order_id" value="{{ order.orderID }}">
-                    <button type="submit">
+                    <button type="submit" style="padding: 5px 10px; border: none; background-color: #007BFF; color: white; cursor: pointer;">
                         {% if order.status == "shipped" %}
                             Mark as Not Yet Shipped
                         {% else %}
@@ -36,8 +40,10 @@
         </tr>
         {% endfor %}
     </table>
-    <a href="/home">Back</a>
+
     <br>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <a href="/home" style="text-decoration: none; color: #007BFF; font-weight: bold; margin-right: 15px;">Back</a>
+    <a href="{{ url_for('logout') }}" style="text-decoration: none; color: #007BFF; font-weight: bold;">Logout</a>
+
 </body>
 </html>

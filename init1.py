@@ -239,7 +239,6 @@ def accept_donation():
     role = cursor.fetchone()
     print(role.get('roleID'))
     if not role or role.get('roleID') != "staff":
-        # 如果用户不是 staff，重定向到主页或显示错误
         error = 'Only staff could view accept donation page'
         return redirect(url_for('home'))
 
@@ -296,7 +295,7 @@ def accept_donation():
 # task 10
 @app.route('/update_orders', methods=['GET', 'POST'])
 def update_orders():
-    username = session.get('username')
+    username = session['username']
     if not username:
         return redirect(url_for('login'))
 
