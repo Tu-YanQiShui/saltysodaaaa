@@ -1,32 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Single Item</title>
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; text-align: center; margin: 20px;">
+<body>
 
-    <!-- 页面标题 -->
-    <h1 style="color: #333;">Find Single Item</h1>
+    <h1>Find Single Item</h1>
 
-    <!-- 搜索表单 -->
-    <form action="/find_single_item" method="POST" style="margin-bottom: 20px;">
-        <label for="item_id" style="font-weight: bold;">Enter Item ID:</label>
-        <input type="text" id="item_id" name="item_id" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin: 10px;">
-        <button type="submit" style="padding: 8px 16px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">
-            Search
-        </button>
+    <form action="/find_single_item" method="POST">
+        <label for="item_id">Enter Item ID:</label>
+        <input type="text" id="item_id" name="item_id" required>
+        <button type="submit">Search</button>
     </form>
 
-    <!-- 错误信息 -->
     {% if error %}
-        <p class="error" style="color: red; font-weight: bold;"><strong>Error:</strong> {{ error }}</p>
+        <p><strong>Error:</strong> {{ error }}</p>
     {% endif %}
 
-    <!-- 结果表格 -->
-    <table border="1" cellspacing="0" cellpadding="10" style="margin: 0 auto; border-collapse: collapse; width: 50%; background-color: #fff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-        <thead style="background-color: #007BFF; color: white;">
+    <table border="1">
+        <thead>
             <tr>
                 <th>Room</th>
                 <th>Shelf</th>
@@ -34,19 +25,16 @@
         </thead>
         <tbody>
             {% for loc in locations %}
-            <tr style="background-color: {% if loop.index0 % 2 == 0 %}#f9f9f9{% else %}#ffffff{% endif %};">
-                <td style="text-align: center;">{{ loc.roomNum }}</td>
-                <td style="text-align: center;">{{ loc.shelfNum }}</td>
+            <tr>
+                <td>{{ loc.roomNum }}</td>
+                <td>{{ loc.shelfNum }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- 返回和登出链接 -->
-    <div style="margin-top: 20px;">
-        <a href="/home" style="text-decoration: none; color: #007BFF; font-weight: bold; margin-right: 15px;">Back</a>
-        <a href="{{ url_for('logout') }}" style="text-decoration: none; color: #007BFF; font-weight: bold;">Logout</a>
-    </div>
+    <a href="/home">Back</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
 
 </body>
 </html>
