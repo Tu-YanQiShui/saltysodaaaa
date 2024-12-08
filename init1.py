@@ -308,7 +308,7 @@ def update_orders():
 
         if current_status:
             new_status = 'shipped' 
-            if current_status['status'] != 'not yet shipped':
+            if current_status['status'] == 'shipped':
                 new_status = 'not yet shipped'
             cursor.execute(
                 "UPDATE Delivered SET status = %s WHERE orderID = %s AND userName = %s",
@@ -328,68 +328,58 @@ def update_orders():
 
     return render_template('update_orders.html', orders=orders)
 
-    
-@app.route('/post', methods=['GET', 'POST'])
-def post():
+# task 11
+@app.route('/year_report', methods=['GET'])
+def year_report():
     username = session['username']
-    cursor = conn.cursor();
-    blog = request.form['blog']
-    query = 'INSERT INTO blog (blog_post, username) VALUES(%s, %s)'
-    cursor.execute(query, (blog, username))
-    conn.commit()
-    cursor.close()
-    return redirect(url_for('home'))
+    if not username:
+        return redirect(url_for('login'))
+    cursor = conn.cursor()
+    # calculate number of clients
+    query = """
+        SELECT COUNT(Distinct userName) as co
+        FROM Person as p NATURAL JOIN ACT as c
+        WHERE roleID = %s
+    """
+    cursor.execute(query, ("client",))
+    client_num = cursor.fetchone()['co']
 
-@app.route('/select_blogger')
-def select_blogger():
-    #check that user is logged in
-    #username = session['username']
-    #should throw exception if username not found
-    
-    cursor = conn.cursor();
-    query = 'SELECT DISTINCT username FROM blog'
+    # number of items each category donated
+    query = """
+        SELECT LOWER(mainCategory) AS mc, COUNT(*) AS donation_count
+        FROM Item
+        GROUP BY LOWER(mainCategory)
+    """
     cursor.execute(query)
-    data = cursor.fetchall()
+    category_count = cursor.fetchall()
+    print(category_count)
+
+    # number of small pieces (with both length and width less than 50)
+    query = """
+        SELECT COUNT(*) AS small_count
+        FROM Piece
+        WHERE length < 50 AND width < 50;
+    """
+    cursor.execute(query)
+    small = cursor.fetchall()
+    print(category_count)
+
+    # the most popular role
+    query = """
+        WITH r_count AS (
+            SELECT roleID, COUNT(*) AS c
+            FROM Act
+            GROUP BY roleID
+        )
+        SELECT roleID, c
+        FROM r_count
+        WHERE c = (SELECT MAX(c) FROM r_count)
+    """
+    cursor.execute(query)
+    popular = cursor.fetchall()
     cursor.close()
-    return render_template('select_blogger.html', user_list=data)
-
-@app.route('/show_posts', methods=["GET", "POST"])
-def show_posts():
-    poster = request.args['poster']
-    cursor = conn.cursor();
-    query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
-    cursor.execute(query, poster)
-    data = cursor.fetchall()
-    cursor.close()
-    return render_template('show_posts.html', poster_name=poster, posts=data)
-
-
-def allowed_file(filename):
-	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-	
-@app.route('/')
-def upload_form():
-	return render_template('upload.html')
-
-@app.route('/', methods=['POST'])
-def upload_file():
-	if request.method == 'POST':
-        # check if the post request has the file part
-		if 'file' not in request.files:
-			flash('No file part')
-			return redirect(request.url)
-		file = request.files['file']
-		if file.filename == '':
-			flash('No file selected for uploading')
-			return redirect(request.url)
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			flash('File successfully uploaded')
-			return redirect('/')
-		else:
-			flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
-			return redirect(request.url)
+    return render_template('year_report.html', client_num = client_num, category_count = category_count, small = small, popular = popular)
+    
 
 
 @app.route('/logout')

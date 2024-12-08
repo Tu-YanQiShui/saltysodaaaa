@@ -1,0 +1,43 @@
+<html>
+<head>
+</head>
+<body>
+
+<br>
+
+<form action="/year_report" method="GET">
+</form>
+
+<h2 style="color: #007BFF;">Number of Clients in the Past Year</h2>
+    <p style="font-size: 48px; color: #333; margin: 20px 0; font-weight: bold;">{{ client_num}}</p>
+<h2 style="color: #007BFF;">Number of item for each main category</h2>
+    <table border="1">
+        <tr>
+            <th>Main Category</th>
+            <th>Donation Count</th>
+        </tr>
+        {% for row in category_count %}
+        <tr>
+            <td>{{ row.mc }}</td>
+            <td>{{ row.donation_count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h1>Small Pieces Count</h1>
+    <p>The number of small pieces (with both length and width less than 50):</p>
+    <p><strong>{{ small }}</strong></p>
+
+    <h1>Most Popular Role</h1>
+    <p>The most popular roles are:</p>
+    <ul>
+        {% for row in popular %}
+        <li>{{ row.roleID }} with {{ row.c }} users.</li>
+        {% endfor %}
+    </ul>
+
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>
