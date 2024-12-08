@@ -164,6 +164,8 @@ def home():
 @app.route('/find_single_item', methods=['GET', 'POST'])
 def find_single_item():
     user = session['username']
+    if not user:
+        return redirect(url_for('login'))
     if(request.method == 'GET'):
         return render_template('find_single_item.html', locations = [])
     item_id = request.form['item_id']
@@ -194,6 +196,8 @@ def find_single_item():
 @app.route('/find_order_items', methods=['GET', 'POST'])
 def find_order_items():
     user = session['username']
+    if not user:
+        return redirect(url_for('login'))
     if(request.method == 'GET'):
         return render_template('find_order_items.html',data = {})
     
@@ -223,6 +227,8 @@ def find_order_items():
 @app.route('/accept_donation', methods=['GET', 'POST'])
 def accept_donation():
     username = session['username']
+    if not username:
+        return redirect(url_for('login'))
     cursor = conn.cursor();
     # check if the user is staff
     # I assume a user cannot be staff and volunteer at the same time
@@ -286,6 +292,43 @@ def accept_donation():
         cursor.close()
 
         return redirect(url_for('home'))
+
+# task 10
+@app.route('/update_orders', methods=['GET', 'POST'])
+def update_orders():
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('login'))
+
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        order_id = request.form['order_id']
+        cursor.execute("SELECT status FROM Delivered WHERE orderID = %s AND userName = %s", (order_id, username))
+        current_status = cursor.fetchone()
+
+        if current_status:
+            new_status = 'shipped' 
+            if current_status['status'] != 'not yet shipped':
+                new_status = 'not yet shipped'
+            cursor.execute(
+                "UPDATE Delivered SET status = %s WHERE orderID = %s AND userName = %s",
+                (new_status, order_id, username)
+            )
+            conn.commit()
+
+    query = """
+        SELECT o.orderID, o.orderDate, o.orderNotes, d.status
+        FROM Ordered AS o
+        NATURAL JOIN Delivered AS d
+        WHERE o.supervisor = %s
+    """
+    cursor.execute(query, (username,))
+    orders = cursor.fetchall()
+    cursor.close()
+
+    return render_template('update_orders.html', orders=orders)
+
     
 @app.route('/post', methods=['GET', 'POST'])
 def post():
