@@ -1,51 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Order Items</title>
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; text-align: center; margin: 20px;">
+<body>
+    <h1>Find Order Items</h1>
 
-    <!-- 页面标题 -->
-    <h1 style="color: #333;">Find Order Items</h1>
-
-    <!-- 搜索表单 -->
-    <form action="/find_order_items" method="POST" style="margin-bottom: 20px;">
-        <label for="order_id" style="font-weight: bold;">Enter Order ID:</label>
-        <input type="text" id="order_id" name="order_id" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin: 10px;">
-        <button type="submit" style="padding: 8px 16px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">
-            Search
-        </button>
+    <form action="/find_order_items" method="POST">
+        <label for="order_id">Order ID:</label>
+        <input type="text" id="order_id" name="order_id" required>
+        <button type="submit">Search</button>
     </form>
 
-    <!-- 错误信息 -->
     {% if error %}
-        <p class="error" style="color: red; font-weight: bold;"><strong>Error:</strong> {{ error }}</p>
+        <p><strong>Error:</strong> {{ error }}</p>
     {% endif %}
 
-    <!-- 订单物品位置标题 -->
-    <h2 style="color: #333; margin-top: 30px;">Item/Piece Locations of This Order</h2>
+    <h2>Locations of This Order</h2>
 
-    <!-- 订单物品和位置 -->
-    <ul style="list-style: none; padding: 0; margin: 0 auto; width: 50%; text-align: left;">
-        {% for key, values in data.items() %}
-            <li style="background-color: #f9f9f9; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-                <strong>ItemID: {{ key }}</strong>
-                <ul style="list-style: none; padding-left: 20px; margin-top: 10px;">
-                    {% for room, shelf in values %}
-                        <li style="padding: 5px;">Room: {{ room }}, Shelf: {{ shelf }}</li>
+    <ul>
+        {% for id, locs in data.items() %}
+            <li>
+                ItemID: {{ id }}
+                <ul>
+                    {% for room, shelf in locs %}
+                        <li>Room: {{ room }}, Shelf: {{ shelf }}</li>
                     {% endfor %}
                 </ul>
             </li>
         {% endfor %}
     </ul>
 
-    <!-- 返回和登出链接 -->
-    <div style="margin-top: 20px;">
-        <a href="/home" style="text-decoration: none; color: #007BFF; font-weight: bold; margin-right: 15px;">Back</a>
-        <a href="{{ url_for('logout') }}" style="text-decoration: none; color: #007BFF; font-weight: bold;">Logout</a>
-    </div>
-
+    <a href="/home">Back</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>

@@ -172,8 +172,8 @@ def find_single_item():
     print(item_id)
     cursor = conn.cursor();
 
-    item_query = "SELECT * FROM Item WHERE ItemID = %s"
-    cursor.execute(item_query, (item_id,))
+    query = "SELECT * FROM Item WHERE ItemID = %s"
+    cursor.execute(query, (item_id,))
     item = cursor.fetchone()
 
     if not item:
@@ -213,10 +213,11 @@ def find_order_items():
     location_list = cursor.fetchall()
     cursor.close()
     item_dict = {}
-    for piece in location_list:
-        item_id = piece['ItemID']
-        room_shelf = (piece['roomNum'], piece['shelfNum'])
-        item_dict.setdefault(item_id, []).append(room_shelf)
+    for p in location_list:
+        item_id = p['ItemID']
+        if item_id not in item_dict:
+            item_dict[item_id] = []
+        item_dict[item_id].append((p['roomNum'], p['shelfNum']))
     print(item_dict)
     if not item_dict:
         error = 'This order does not exist'
