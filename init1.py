@@ -401,8 +401,6 @@ def year_report():
     cursor.close()
     return render_template('year_report.html', client_num = client_num, category_count = category_count, small = small, popular = popular)
     
-
-
 @app.route('/logout')
 def logout():
     session.pop('username')
