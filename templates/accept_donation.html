@@ -1,60 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Single Item</title>
 </head>
-<body style="font-family: Arial, sans-serif; text-align: center; background-color: #f9f9f9; margin: 20px;">
+<body>
 
-    <h1 style="color: #333; margin-bottom: 20px;">Find Donations</h1>
+    <h1>Accept Donations</h1>
 
-    <form action="/accept_donation" method="POST" style="background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; display: inline-block; text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-        <label for="donor_id" style="display: block; margin-bottom: 5px;">Enter Donor ID (Name):</label>
-        <input type="text" id="donor_id" name="donor_id" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 3px;">
-
-        <label for="item_description" style="display: block; margin-bottom: 5px;">Item Description:</label>
-        <input type="text" id="item_description" name="item_description" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 3px;">
-
-        <label for="photo" style="display: block; margin-bottom: 5px;">Photo (File Name):</label>
-        <input type="text" id="photo" name="photo" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 3px;">
-
-        <label for="color" style="display: block; margin-bottom: 5px;">Color:</label>
-        <input type="text" id="color" name="color" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 3px;">
-
-        <label for="is_new" style="display: block; margin-bottom: 5px;">Is the item new?</label>
-        <select id="is_new" name="is_new" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 3px;">
+    <form action="/accept_donation" method="POST">
+        <label for="donor_id">Donor ID (Name):</label>
+        <input type="text" id="donor_id" name="donor_id" required>
+        <br>
+        <label for="item_description">Item Description:</label>
+        <input type="text" id="item_description" name="item_description" required>
+        <br>
+        <label for="photo">Photo:</label>
+        <input type="text" id="photo" name="photo" required>
+        <br>
+        <label for="color">Color:</label>
+        <input type="text" id="color" name="color" required>
+        <br>
+        <label for="is_new">Item new?</label>
+        <select id="is_new" name="is_new" required>
             <option value="true">Yes</option>
             <option value="false">No</option>
         </select>
-
-        <label for="has_pieces" style="display: block; margin-bottom: 5px;">Does the item have pieces?</label>
-        <select id="has_pieces" name="has_pieces" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 3px;">
+        <br>
+        <label for="has_pieces">Item have pieces?</label>
+        <select id="has_pieces" name="has_pieces" required>
             <option value="true">Yes</option>
             <option value="false">No</option>
         </select>
-
-        <label for="material" style="display: block; margin-bottom: 5px;">Material:</label>
-        <input type="text" id="material" name="material" style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 3px;">
-
-        <label for="main_category" style="display: block; margin-bottom: 5px;">Main Category:</label>
-        <input type="text" id="main_category" name="main_category" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 3px;">
-
-        <label for="sub_category" style="display: block; margin-bottom: 5px;">Sub Category:</label>
-        <input type="text" id="sub_category" name="sub_category" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 3px;">
-
-        <button type="submit" style="background-color: #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer; font-size: 16px;">
-            Submit
-        </button>
+        <br>
+        <label for="material">Material:</label>
+        <input type="text" id="material" name="material">
+        <br>
+        <label for="main_category">Main Category:</label>
+        <input type="text" id="main_category" name="main_category" required>
+        <br>
+        <label for="sub_category">Sub Category:</label>
+        <input type="text" id="sub_category" name="sub_category" required>
+        <br>
+        <button type="submit">Submit</button>
     </form>
 
     {% if error %}
-        <p class="error" style="color: red; margin-top: 20px;"><strong>Error:</strong> {{ error }}</p>
+        <p><strong>Error:</strong> {{ error }}</p>
     {% endif %}
 
-    <div style="margin-top: 20px;">
-        <a href="/home" style="text-decoration: none; color: #007BFF; font-weight: bold; margin-right: 15px;">Back</a>
-        <a href="{{ url_for('logout') }}" style="text-decoration: none; color: #007BFF; font-weight: bold;">Logout</a>
+    <div>
+        <a href="/home">Back</a>
+        <br>
+        <a href="{{ url_for('logout') }}">Logout</a>
     </div>
 
 </body>

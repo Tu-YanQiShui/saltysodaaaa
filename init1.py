@@ -239,20 +239,26 @@ def accept_donation():
     cursor.execute(query, username)
     role = cursor.fetchone()
     print(role.get('roleID'))
-    if not role or role.get('roleID') != "staff":
+    if role.get('roleID') != "staff":
         error = 'Only staff could view accept donation page'
         return redirect(url_for('home'))
 
     if(request.method == 'GET'):
         return render_template('accept_donation.html', items_with_pieces={})
-
+    # check if the donor id is valid
     if(role.get('roleID') == "staff"):
         donor_id = request.form['donor_id']
-        cursor.execute("SELECT userName FROM Act WHERE userName = %s and roleID = 'donor'", (donor_id,))
+        query = """
+        SELECT userName 
+        FROM Act 
+        WHERE userName = %s and roleID = 'donor'
+        """
+        cursor.execute(query, (donor_id,))
         donor = cursor.fetchone()
         if not donor:
-            error = "The provided donor ID is not valid or does not have the 'donor' role."
+            error = "The provided donor ID does not exist."
             return render_template('accept_donation.html', error=error)
+        # get info from user input
         item_description = request.form['item_description']
         photo = request.form['photo']
         color = request.form['color']
@@ -262,31 +268,40 @@ def accept_donation():
         main_category = request.form['main_category']
         sub_category = request.form['sub_category']
 
-        cursor.execute("""
-            SELECT mainCategory, subCategory FROM Category
+        # check if category exist
+        query = """
+            SELECT mainCategory, subCategory 
+            FROM Category
             WHERE mainCategory = %s AND subCategory = %s
-        """, (main_category, sub_category))
+        """
+        cursor.execute(query, (main_category, sub_category))
         category = cursor.fetchone()
 
+        # if category does not exist, insert the category into database
         if not category:
-            cursor.execute("""
+            query = """
                 INSERT INTO Category (mainCategory, subCategory, catNotes)
                 VALUES (%s, %s, %s)
-            """, (main_category, sub_category, "Automatically added from donation form."))
+            """
+            cursor.execute(query, (main_category, sub_category, "category notes"))
             conn.commit()
 
-        cursor.execute("""
+        # insert item info into db
+        query = """
             INSERT INTO Item (iDescription, photo, color, isNew, hasPieces, material, mainCategory, subCategory)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (item_description, photo, color, is_new, has_pieces, material, main_category, sub_category))
+        """
+        cursor.execute(query, (item_description, photo, color, is_new, has_pieces, material, main_category, sub_category))
         conn.commit()
 
         item_id = cursor.lastrowid
 
-        cursor.execute("""
+        # update the donated by table
+        query = """
             INSERT INTO DonatedBy (ItemID, userName, donateDate)
             VALUES (%s, %s, CURDATE())
-        """, (item_id, donor_id))
+        """
+        cursor.execute(query, (item_id, donor_id))
         conn.commit()
 
         cursor.close()
