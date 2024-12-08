@@ -169,16 +169,25 @@ def find_single_item():
     item_id = request.form['item_id']
     print(item_id)
     cursor = conn.cursor();
+
+    item_query = "SELECT * FROM Item WHERE ItemID = %s"
+    cursor.execute(item_query, (item_id,))
+    item = cursor.fetchone()
+
+    if not item:
+        error = "This item does not exist in the database."
+        return render_template('find_single_item.html', locations=[], error=error)
+
     query = """SELECT p.shelfNum, p.roomNum 
             FROM Piece as p
             Where p.ItemID = %s"""
-    cursor.execute(query, (item_id))
+    cursor.execute(query, (item_id,))
     location_list = cursor.fetchall()
     print(location_list)
-    if not location_list:
-        error = 'This item does not exist'
-        return render_template('find_single_item.html', locations=[], error=error)
     cursor.close()
+    if not location_list:
+        error = 'This item exist, but there is no data for piece locations'
+        return render_template('find_single_item.html', locations=[], error=error)
     return render_template('find_single_item.html', locations = location_list)
 
 # task 3
@@ -214,8 +223,6 @@ def find_order_items():
 @app.route('/accept_donation', methods=['GET', 'POST'])
 def accept_donation():
     username = session['username']
-    if(request.method == 'GET'):
-        return render_template('accept_donation.html', items_with_pieces={})
     cursor = conn.cursor();
     # check if the user is staff
     # I assume a user cannot be staff and volunteer at the same time
@@ -224,38 +231,62 @@ def accept_donation():
     """
     cursor.execute(query, username)
     role = cursor.fetchone()
-    #print(role)
-    #print(role.get('roleID') == "staff")
+    print(role.get('roleID'))
+    if not role or role.get('roleID') != "staff":
+        # 如果用户不是 staff，重定向到主页或显示错误
+        error = 'Only staff could view accept donation page'
+        return redirect(url_for('home'))
+
+    if(request.method == 'GET'):
+        return render_template('accept_donation.html', items_with_pieces={})
+
     if(role.get('roleID') == "staff"):
-        print("hello")
-        # check if the donor exist
-        donor = request.form['doner_id']
-        query = """
-        SELECT d.userName, i.ItemID, p.roomNum, p.shelfNum
-        FROM DonatedBy as d Natural Join Item as i
-        Join Piece as p on p.ItemID = i.ItemID 
-        WHERE d.userName = %s
-        """
-        cursor.execute(query, (donor))
-        data = cursor.fetchall()
-        print(data)
-        items_with_pieces = {}
-        for row in data:
-            item_id = row['ItemID']
-            if item_id not in items_with_pieces:
-                items_with_pieces[item_id] = []
-            items_with_pieces[item_id].append({
-                'roomNum': row['roomNum'],
-                'shelfNum': row['shelfNum']
-            })
-        return render_template('accept_donation.html', items_with_pieces=items_with_pieces)
-        
+        donor_id = request.form['donor_id']
+        cursor.execute("SELECT userName FROM Act WHERE userName = %s and roleID = 'donor'", (donor_id,))
+        donor = cursor.fetchone()
+        if not donor:
+            error = "The provided donor ID is not valid or does not have the 'donor' role."
+            return render_template('accept_donation.html', error=error)
+        item_description = request.form['item_description']
+        photo = request.form['photo']
+        color = request.form['color']
+        is_new = request.form['is_new'] == 'true'
+        has_pieces = request.form['has_pieces'] == 'true'
+        material = request.form.get('material')
+        main_category = request.form['main_category']
+        sub_category = request.form['sub_category']
 
-    else:
-        error = 'Only staff could operate this page'
-        return render_template('accept_donation.html', error=error)
-    return render_template('accept_donation.html')
+        cursor.execute("""
+            SELECT mainCategory, subCategory FROM Category
+            WHERE mainCategory = %s AND subCategory = %s
+        """, (main_category, sub_category))
+        category = cursor.fetchone()
 
+        if not category:
+            cursor.execute("""
+                INSERT INTO Category (mainCategory, subCategory, catNotes)
+                VALUES (%s, %s, %s)
+            """, (main_category, sub_category, "Automatically added from donation form."))
+            conn.commit()
+
+        cursor.execute("""
+            INSERT INTO Item (iDescription, photo, color, isNew, hasPieces, material, mainCategory, subCategory)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (item_description, photo, color, is_new, has_pieces, material, main_category, sub_category))
+        conn.commit()
+
+        item_id = cursor.lastrowid
+
+        cursor.execute("""
+            INSERT INTO DonatedBy (ItemID, userName, donateDate)
+            VALUES (%s, %s, CURDATE())
+        """, (item_id, donor_id))
+        conn.commit()
+
+        cursor.close()
+
+        return redirect(url_for('home'))
+    
 @app.route('/post', methods=['GET', 'POST'])
 def post():
     username = session['username']

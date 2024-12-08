@@ -14,7 +14,9 @@
 		<li><a href="/accept_donation">Accept Donation</a></li>
 	</ul>
 </nav>
-
+	{% if error %}
+		<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}
 <a href="{{ url_for('logout') }}">Logout</a>
 
 </body>

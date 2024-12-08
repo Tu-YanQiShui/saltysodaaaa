@@ -8,29 +8,60 @@
 <body>
     <h1>Find donations</h1>
     <form action="/accept_donation" method="POST">
-        <label for="doner_id">Enter Doner ID(Name):</label>
-        <input type="text" id="doner_id" name="doner_id" required>
-        <button type="submit">Search</button>
+        <!-- Donor ID -->
+        <label for="donor_id">Enter Donor ID (Name):</label>
+        <input type="text" id="donor_id" name="donor_id" required>
+        <br><br>
+
+        <!-- Item Description -->
+        <label for="item_description">Item Description:</label>
+        <input type="text" id="item_description" name="item_description" required>
+        <br><br>
+
+        <!-- Photo -->
+        <label for="photo">Photo (File Name):</label>
+        <input type="text" id="photo" name="photo" required>
+        <br><br>
+
+        <!-- Color -->
+        <label for="color">Color:</label>
+        <input type="text" id="color" name="color" required>
+        <br><br>
+
+        <!-- Is New -->
+        <label for="is_new">Is the item new?</label>
+        <select id="is_new" name="is_new" required>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+        <br><br>
+
+        <!-- Has Pieces -->
+        <label for="has_pieces">Does the item have pieces?</label>
+        <select id="has_pieces" name="has_pieces" required>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+        <br><br>
+
+        <!-- Material -->
+        <label for="material">Material:</label>
+        <input type="text" id="material" name="material">
+        <br><br>
+
+        <!-- Main Category -->
+        <label for="main_category">Main Category:</label>
+        <input type="text" id="main_category" name="main_category" required>
+        <br><br>
+
+        <!-- Sub Category -->
+        <label for="sub_category">Sub Category:</label>
+        <input type="text" id="sub_category" name="sub_category" required>
+        <br><br>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
     </form>
-    {% for item_id, pieces in items_with_pieces.items() %}
-        <h2>Item ID: {{ item_id }}</h2>
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Room Number</th>
-                    <th>Shelf Number</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for piece in pieces %}
-                    <tr>
-                        <td>{{ piece.roomNum }}</td>
-                        <td>{{ piece.shelfNum }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endfor %}
 
     {% if error %}
 		<p class="error"><strong>Error:</strong> {{error}}</p>
